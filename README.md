@@ -1,13 +1,13 @@
-# Custom sensor and use in Gazebo Fortress
+# Custom sensor plugin in Gazebo Fortress
 
 ## Modification
 ### implement custom sensor class
-custom sensor class should inherits and required to implement Load() and  Update() functions. In this template, it named Odometer and you can rename it.You should also create public interface to be used in system class.
+The custom sensor class should inherit from ignition::sensors::Sensor and implement both Load() and Update() functions. In this template, it is named Odometer, which you can rename as needed. You should also create a public interface that will be used by the system class.
 
 ### implement custom system  class
-
+The custom system class is required to implement two virtual functions: PreUpdate() and PostUpdate(). Your custom sensor class's interface should be appropriately used within these two functions.
 ### edit the .sdf file
-
+TBD.
 ## Build
 From the root of the this project, do the following to build:
 ```bash
@@ -30,6 +30,8 @@ ign gazebo -r odometer.sdf
 ```
 
 ## Refernces
-all these were copied from Open Source Robotics Foundation's code repositories:
+All code samples were derived from Open Source Robotics Foundation's repositories:
+
 https://github.com/gazebosim/gz-sensors/tree/ign-sensors6/examples/custom_sensor
+
 https://github.com/gazebosim/gz-sim/tree/ign-gazebo6/examples/plugin/custom_sensor_system
