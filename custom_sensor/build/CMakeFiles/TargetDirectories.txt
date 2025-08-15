@@ -1,0 +1,3 @@
+/home/robomaster/Desktop/ign_tutorials/src/gz_smi_custom_sensor_template/build/CMakeFiles/odometer.dir
+/home/robomaster/Desktop/ign_tutorials/src/gz_smi_custom_sensor_template/build/CMakeFiles/edit_cache.dir
+/home/robomaster/Desktop/ign_tutorials/src/gz_smi_custom_sensor_template/build/CMakeFiles/rebuild_cache.dir
