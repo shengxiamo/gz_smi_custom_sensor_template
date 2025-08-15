@@ -15,26 +15,26 @@
  *
  */
 
- #include <gz/msgs/double.pb.h>
+ #include <ignition/msgs/double.pb.h>
 
  #include <string>
  #include <unordered_map>
  #include <utility>
  
- #include <gz/common/Profiler.hh>
- #include <gz/plugin/Register.hh>
- #include <gz/sensors/Noise.hh>
- #include <gz/sensors/SensorFactory.hh>
+ #include <ignition/common/Profiler.hh>
+ #include <ignition/plugin/Register.hh>
+ #include <ignition/sensors/Noise.hh>
+ #include <ignition/sensors/SensorFactory.hh>
  
  #include <sdf/Sensor.hh>
  
- #include <gz/sim/components/CustomSensor.hh>
- #include <gz/sim/components/Name.hh>
- #include <gz/sim/components/ParentEntity.hh>
- #include <gz/sim/components/Sensor.hh>
- #include <gz/sim/components/World.hh>
- #include <gz/sim/EntityComponentManager.hh>
- #include <gz/sim/Util.hh>
+ #include <ignition/gazebo/components/CustomSensor.hh>
+ #include <ignition/gazebo/components/Name.hh>
+ #include <ignition/gazebo/components/ParentEntity.hh>
+ #include <ignition/gazebo/components/Sensor.hh>
+ #include <ignition/gazebo/components/World.hh>
+ #include <ignition/gazebo/EntityComponentManager.hh>
+ #include <ignition/gazebo/Util.hh>
  
  #include "Odometer.hh"
  #include "OdometerSystem.hh"
@@ -42,18 +42,18 @@
  using namespace custom;
  
  //////////////////////////////////////////////////
- void OdometerSystem::PreUpdate(const gz::sim::UpdateInfo &,
-     gz::sim::EntityComponentManager &_ecm)
+ void OdometerSystem::PreUpdate(const ignition::gazebo::UpdateInfo &,
+     ignition::gazebo::EntityComponentManager &_ecm)
  {
-   _ecm.EachNew<gz::sim::components::CustomSensor,
-                gz::sim::components::ParentEntity>(
-     [&](const gz::sim::Entity &_entity,
-         const gz::sim::components::CustomSensor *_custom,
-         const gz::sim::components::ParentEntity *_parent)->bool
+   _ecm.EachNew<ignition::gazebo::components::CustomSensor,
+                ignition::gazebo::components::ParentEntity>(
+     [&](const ignition::gazebo::Entity &_entity,
+         const ignition::gazebo::components::CustomSensor *_custom,
+         const ignition::gazebo::components::ParentEntity *_parent)->bool
        {
          // Get sensor's scoped name without the world
-         auto sensorScopedName = gz::sim::removeParentScope(
-             gz::sim::scopedName(_entity, _ecm, "::", false), "::");
+         auto sensorScopedName = ignition::gazebo::removeParentScope(
+             ignition::gazebo::scopedName(_entity, _ecm, "::", false), "::");
          sdf::Sensor data = _custom->Data();
          data.SetName(sensorScopedName);
  
@@ -64,23 +64,23 @@
            data.SetTopic(topic);
          }
  
-         gz::sensors::SensorFactory sensorFactory;
+         ignition::sensors::SensorFactory sensorFactory;
          auto sensor = sensorFactory.CreateSensor<custom::Odometer>(data);
          if (nullptr == sensor)
          {
-           gzerr << "Failed to create odometer [" << sensorScopedName << "]"
+           ignerr << "Failed to create odometer [" << sensorScopedName << "]"
                   << std::endl;
            return false;
          }
  
          // Set sensor parent
-         auto parentName = _ecm.Component<gz::sim::components::Name>(
+         auto parentName = _ecm.Component<ignition::gazebo::components::Name>(
              _parent->Data())->Data();
          sensor->SetParent(parentName);
  
          // Set topic on Gazebo
          _ecm.CreateComponent(_entity,
-             gz::sim::components::SensorTopic(sensor->Topic()));
+             ignition::gazebo::components::SensorTopic(sensor->Topic()));
  
          // Keep track of this sensor
          this->entitySensorMap.insert(std::make_pair(_entity,
@@ -91,28 +91,16 @@
  }
  
  //////////////////////////////////////////////////
- void OdometerSystem::PostUpdate(const gz::sim::UpdateInfo &_info,
-     const gz::sim::EntityComponentManager &_ecm)
+ void OdometerSystem::PostUpdate(const ignition::gazebo::UpdateInfo &_info,
+     const ignition::gazebo::EntityComponentManager &_ecm)
  {
    // Only update and publish if not paused.
    if (!_info.paused)
    {
      for (auto &[entity, sensor] : this->entitySensorMap)
      {
-       sensor->NewPosition(gz::sim::worldPose(entity, _ecm).Pos());
-       // Call base Sensor class' Update function with force = false
-       // to make the sensor respect the specified update rate.
-       auto baseSensor = std::dynamic_pointer_cast<gz::sensors::Sensor>(sensor);
-       if (baseSensor)
-       {
-         baseSensor->Update(_info.simTime, false);
-       }
-       else
-       {
-         sensor->Update(_info.simTime);
-         gzerr << "Error casting custom sensor to base Sensor class. "
-               << "This should not happen." << std::endl;
-       }
+       sensor->NewPosition(ignition::gazebo::worldPose(entity, _ecm).Pos());
+       sensor->Update(_info.simTime);
      }
    }
  
@@ -121,24 +109,24 @@
  
  //////////////////////////////////////////////////
  void OdometerSystem::RemoveSensorEntities(
-     const gz::sim::EntityComponentManager &_ecm)
+     const ignition::gazebo::EntityComponentManager &_ecm)
  {
-   _ecm.EachRemoved<gz::sim::components::CustomSensor>(
-     [&](const gz::sim::Entity &_entity,
-         const gz::sim::components::CustomSensor *)->bool
+   _ecm.EachRemoved<ignition::gazebo::components::CustomSensor>(
+     [&](const ignition::gazebo::Entity &_entity,
+         const ignition::gazebo::components::CustomSensor *)->bool
        {
          if (this->entitySensorMap.erase(_entity) == 0)
          {
-           gzerr << "Internal error, missing odometer for entity ["
+           ignerr << "Internal error, missing odometer for entity ["
                           << _entity << "]" << std::endl;
          }
          return true;
        });
  }
  
- GZ_ADD_PLUGIN(OdometerSystem, gz::sim::System,
+ IGNITION_ADD_PLUGIN(OdometerSystem, ignition::gazebo::System,
    OdometerSystem::ISystemPreUpdate,
    OdometerSystem::ISystemPostUpdate
  )
  
- GZ_ADD_PLUGIN_ALIAS(OdometerSystem, "custom::OdometerSystem")
+ IGNITION_ADD_PLUGIN_ALIAS(OdometerSystem, "custom::OdometerSystem")

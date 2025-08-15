@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2021 Open Source Robotics Foundation
  *
@@ -18,39 +17,39 @@
 #ifndef ODOMETERSYSTEM_HH_
 #define ODOMETERSYSTEM_HH_
 
-#include <gz/sim/System.hh>
-#include <gz/sensors/Sensor.hh>
-#include <gz/transport/Node.hh>
+#include <ignition/gazebo/System.hh>
+#include <ignition/sensors/Sensor.hh>
+#include <ignition/transport/Node.hh>
 
 namespace custom
 {
   /// \brief Example showing how to tie a custom sensor, in this case an
   /// odometer, into simulation
   class OdometerSystem:
-    public gz::sim::System,
-    public gz::sim::ISystemPreUpdate,
-    public gz::sim::ISystemPostUpdate
+    public ignition::gazebo::System,
+    public ignition::gazebo::ISystemPreUpdate,
+    public ignition::gazebo::ISystemPostUpdate
   {
     // Documentation inherited.
     // During PreUpdate, check for new sensors that were inserted
     // into simulation and create more components as needed.
-    public: void PreUpdate(const gz::sim::UpdateInfo &_info,
-        gz::sim::EntityComponentManager &_ecm) final;
+    public: void PreUpdate(const ignition::gazebo::UpdateInfo &_info,
+        ignition::gazebo::EntityComponentManager &_ecm) final;
 
     // Documentation inherited.
     // During PostUpdate, update the known sensors and publish their data.
     // Also remove sensors that have been deleted.
-    public: void PostUpdate(const gz::sim::UpdateInfo &_info,
-        const gz::sim::EntityComponentManager &_ecm) final;
+    public: void PostUpdate(const ignition::gazebo::UpdateInfo &_info,
+        const ignition::gazebo::EntityComponentManager &_ecm) final;
 
     /// \brief Remove custom sensors if their entities have been removed from
     /// simulation.
     /// \param[in] _ecm Immutable reference to ECM.
     private: void RemoveSensorEntities(
-        const gz::sim::EntityComponentManager &_ecm);
+        const ignition::gazebo::EntityComponentManager &_ecm);
 
     /// \brief A map of custom entities to their sensors
-    private: std::unordered_map<gz::sim::Entity,
+    private: std::unordered_map<ignition::gazebo::Entity,
         std::shared_ptr<Odometer>> entitySensorMap;
   };
 }
