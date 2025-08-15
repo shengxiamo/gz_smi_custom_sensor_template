@@ -20,7 +20,7 @@
 #include <ignition/msgs/double.pb.h>
 
 #include <ignition/common/Console.hh>
-#include <ignition/sensors/Noise.hh>/*  */
+#include <ignition/sensors/Noise.hh>
 #include <ignition/sensors/Util.hh>
 
 #include "Odometer.hh"
@@ -70,7 +70,8 @@ bool Odometer::Load(const sdf::Sensor &_sdf)
 
   return true;
 }
-*
+bool Odometer::Update(const std::chrono::steady_clock::duration &_now)
+{
   ignition::msgs::Double msg;
   *msg.mutable_header()->mutable_stamp() = ignition::msgs::Convert(_now);
   auto frame = msg.mutable_header()->add_data();
