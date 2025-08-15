@@ -11,10 +11,9 @@ custom sensor class should inherits and required to implement Load() and  Update
 ## Build
 From the root of the this project, do the following to build:
 ```bash
-cd custom_sensor_system
 mkdir build
 cd build
-cmake ..
+cmake ../custom_sensor_system/
 make -j
 ```
 
@@ -23,7 +22,6 @@ The plugin must be attached to an entity to be loaded. This is demonstrated in t
 
 Before starting Gazebo, we must make sure it can find the plugin by doing:
 ```bash
-cd custom_sensor_system/
 export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=`pwd`/build
 ```
 Then load the example world:
